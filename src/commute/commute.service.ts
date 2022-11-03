@@ -65,47 +65,57 @@ export class CommuteService {
         if (commutes.length === 0) throw new NotFoundException('출퇴근 정보를 찾을 수 없습니다.');
 
         const workingWeeklyHour = await this.workingHourRepository.find({
-            order: { id: "DESC"}
+            order: { id: "DESC" }
         });
         if (workingWeeklyHour.length === 0) throw new NotFoundException('총 근무 시간 정보를 찾을 수 없습니다.');
 
         const newYearDate = commutes[0].date.getFullYear().toString() + "-01-01";
 
+        // TODO::출퇴근이 다른 일자일 때도 체크
         const workingAttendenceHourSum = await this.commuteRepository.createQueryBuilder()
-        .where('week = :week', { week: commutes[0].week })
-        .andWhere(':newYearDate <= date AND date <= :todayDate', { newYearDate: newYearDate, todayDate: commutes[0].date })
-        .andWhere('state = :state', {state: CommuteState.ATTENDANCE})
-        .select("SUM(date)", "sum")
-        .getRawOne();
+            .where('week = :week', { week: commutes[0].week })
+            .andWhere(':newYearDate <= date AND date <= :todayDate', { newYearDate: newYearDate, todayDate: commutes[0].date })
+            .andWhere('state = :state', { state: CommuteState.ATTENDANCE })
+            .select("SUM(date)", "sum")
+            .getRawOne();
 
         const workingLeavingHourSum = await this.commuteRepository.createQueryBuilder()
-        .where('week = :week', { week: commutes[0].week })
-        .andWhere(':newYearDate <= date AND date <= :todayDate', { newYearDate: newYearDate, todayDate: commutes[0].date })
-        .andWhere('state = :state', {state: CommuteState.LEAVE})
-        .select("SUM(date)", "sum")
-        .getRawOne();
-
+            .where('week = :week', { week: commutes[0].week })
+            .andWhere(':newYearDate <= date AND date <= :todayDate', { newYearDate: newYearDate, todayDate: commutes[0].date })
+            .andWhere('state = :state', { state: CommuteState.LEAVE })
+            .select("SUM(date)", "sum")
+            .getRawOne();
         
-        const workingWeeklyTotalHour = workingLeavingHourSum.sum - workingAttendenceHourSum.sum;
+        const workingWeeklyTotalHour = workingLeavingHourSum.sum ? workingLeavingHourSum.sum - workingAttendenceHourSum.sum : 0;
 
         if (commutes[0].state === CommuteState.LEAVE) {
             // 퇴근시간 - 출근시간
             const workingHour = commutes[0].date.getTime() - commutes[1].date.getTime();
+            const todayState = workingHour / (1000 * 60 * 60) - workingWeeklyHour[0].workingHour / 5;
+            console.log(workingWeeklyTotalHour / (10000));
+            const weeklyState = workingWeeklyHour[0].workingHour - workingWeeklyTotalHour / (10000);
             return {
                 state: CommuteState.LEAVE,
                 message: '일 끝남',
                 workingHour: workingWeeklyHour[0].workingHour,
-                todayState: workingHour / (1000 * 60 * 60) - workingWeeklyHour[0].workingHour / 5,
-                weeklyState: workingWeeklyTotalHour / (10000) - workingWeeklyHour[0].workingHour
+                todayState: todayState.toFixed(1),
+                weeklyState: weeklyState.toFixed(1)
             }
         }
-        
+
         if (commutes[0].state === CommuteState.ATTENDANCE) {
+            const now = new Date();
+            const timeFromAttendance = now.getTime() - commutes[0].date.getTime();
+            const timeFromAttendanceHour = Math.floor(timeFromAttendance / (1000 * 60 * 60));
+            const timeFromAttendanceMinute =  Math.floor(timeFromAttendance / (1000 * 60)) - (timeFromAttendanceHour * 60);
+            const weeklyState = workingWeeklyHour[0].workingHour - workingWeeklyTotalHour / (10000);
             return {
                 state: CommuteState.ATTENDANCE,
                 message: '일 중',
                 workingHour: workingWeeklyHour[0].workingHour,
-                weeklyState: workingWeeklyTotalHour / (10000) - workingWeeklyHour[0].workingHour
+                weeklyState: weeklyState,
+                timeFromAttendanceHour: timeFromAttendanceHour,
+                timeFromAttendanceMinute: timeFromAttendanceMinute
             }
         }
     }
