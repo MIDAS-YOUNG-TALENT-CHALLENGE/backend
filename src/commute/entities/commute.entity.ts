@@ -1,5 +1,5 @@
+import { UserEntity } from 'src/user/entities/user.entity';
 import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
 
 export enum CommuteState {
     ATTENDANCE = "attendance",

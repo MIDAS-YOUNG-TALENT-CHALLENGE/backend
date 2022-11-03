@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { CommuteModule } from './commute/commute.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
       logging: true,
       entities: [__dirname + '/**/entities/*.entity.{js,ts}']
     }),
+    CommuteModule,
   ],
   controllers: [],
   providers: [],

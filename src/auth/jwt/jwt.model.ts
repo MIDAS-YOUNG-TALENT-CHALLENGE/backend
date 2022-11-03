@@ -1,7 +1,7 @@
 import { UserRole } from "src/user/entities/user.entity";
 
 export type User = {
-    usercode: number,
+    userId: number,
     role: UserRole,
     nickname: string,
     email: string,

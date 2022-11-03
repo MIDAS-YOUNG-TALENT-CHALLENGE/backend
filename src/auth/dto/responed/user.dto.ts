@@ -4,8 +4,7 @@ import { UserRole } from "src/user/entities/user.entity";
 export class UserDto {
 
     @Expose()
-    usercode: number;
-
+    userId: number;
 
     @Expose()
     role: UserRole;
