@@ -42,7 +42,9 @@ export class UserService {
         });
         const userId = await this.getLastUserId();
         if (role === UserRole.EMPOLYEE) {
+            await this.SetWorkingHour(40);
             return this.teamService.joinTeam(userId, teamCode);
+
         }
         if (role === UserRole.SUPERVISOR) {
             return this.teamService.CreateTeam(userId, {
@@ -88,12 +90,19 @@ export class UserService {
         }
     }
 
-    // TODO::있으면 업데이트 추가
     async SetWorkingHour(workingHour: number) {
         const newWorkingHour: WorkingHourEntity = plainToClass(WorkingHourEntity, {
             workingHour: workingHour
         });
         await this.workingHourRepository.save(newWorkingHour);
+    }
+
+    async UpdateWorkingHour(workingHour: number) {
+        await this.workingHourRepository.createQueryBuilder()
+            .update(WorkingHourEntity)
+            .set({ workingHour: workingHour })
+            .where("id = :id", { id: 1 })
+            .execute();
     }
 
     async ViewAllUser() {

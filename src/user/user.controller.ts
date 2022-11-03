@@ -28,11 +28,11 @@ export class UserController {
         return user;
     }
 
-    @Post('set/hours')
+    @Put('set/hours')
     @UseGuards(AdminGuard)
     @UseGuards(JwtAuthGuard)
     setWorkingHours(@Body('workingHour') workingHour: number) {
-        return this.userService.SetWorkingHour(workingHour);
+        return this.userService.UpdateWorkingHour(workingHour);
     }
 
     @Get('all')

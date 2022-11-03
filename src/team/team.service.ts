@@ -42,7 +42,7 @@ export class TeamService {
         await this.teamRepository.save(newTeam);
         await this.memberRepository.save(newLeader);
         return {
-            teamId: newTeamId
+            teamCode: dto.teamCode
         }
     }
 
