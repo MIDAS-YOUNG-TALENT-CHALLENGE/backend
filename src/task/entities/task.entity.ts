@@ -13,6 +13,13 @@ export class TaskEntity {
     @JoinColumn({ name: 'teamId' })
     team: TeamEntity;
 
+    @ManyToOne(type => UserEntity, manager => manager.userId)
+    @JoinColumn({ name: 'managerId' })
+    manager: UserEntity;
+
+    @Column({ nullable: true, unsigned: true })
+    managerId: number;
+
     @Column({ nullable: false, type: 'uuid' })
     teamId: string;
 
@@ -58,5 +65,11 @@ export class TaskEntity {
         default: false
     })
     completed: Boolean;
+
+    @Column({ 
+        type: Boolean, 
+        default: false
+    })
+    examined: Boolean;
 
 }

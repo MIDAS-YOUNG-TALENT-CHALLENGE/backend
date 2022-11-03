@@ -8,6 +8,7 @@ import { CreateTaskDTO } from './dto/request/create-task.dto';
 import { TaskEntity } from './entities/task.entity';
 import { TeamUtil } from 'src/team/team.util';
 import { UpdateTaskDTO } from './dto/request/update-task.dto';
+import { UpdateTaskStartedDTO } from './dto/request/update-task-started.dto';
 
 @Injectable()
 export class TaskService {
@@ -48,20 +49,40 @@ export class TaskService {
                     nickname: true
                 }
             },
-            where: {teamId: teamId}
+            where: { teamId: teamId }
         });
     }
 
     async UpdateTask(dto: UpdateTaskDTO) {
         await this.taskRepository.createQueryBuilder()
             .update(TaskEntity)
-            .set({ title: dto.title, 
-                location: dto.location, 
+            .set({
+                title: dto.title,
+                location: dto.location,
                 description: dto.description,
                 mentionId: dto.mention,
-                important: dto.important 
+                important: dto.important
             })
             .where("taskId = :taskId", { taskId: dto.taskId })
             .execute();
+    }
+
+    async UpdateTaskState(dto: UpdateTaskStartedDTO, user: User) {
+        await this.taskRepository.createQueryBuilder()
+            .update(TaskEntity)
+            .set({
+                started: dto.started === "true" ? true : false,
+                managerId: user.userId
+            })
+            .where("taskId = :taskId", { taskId: dto.taskId })
+            .execute();
+    }
+
+    
+
+    async ViewMyCommit(user: User) {
+        return await this.taskRepository.find({
+            where: { managerId: user.userId, completed: true, examined: true }
+        });
     }
 }

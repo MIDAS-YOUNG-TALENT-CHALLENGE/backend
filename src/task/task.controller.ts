@@ -1,15 +1,17 @@
 import { Body, Controller, Param, Post, UseGuards, Delete, Put, Get } from '@nestjs/common';
 import { AdminGuard } from 'src/auth/admin.guard';
+import { EmployeeGuard } from 'src/auth/employee.guard';
 import { GetUser } from 'src/auth/getUser.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { User } from 'src/auth/jwt/jwt.model';
 import { CreateTaskDTO } from './dto/request/create-task.dto';
+import { UpdateTaskStartedDTO } from './dto/request/update-task-started.dto';
 import { UpdateTaskDTO } from './dto/request/update-task.dto';
 import { TaskService } from './task.service';
 
 @Controller('task')
 export class TaskController {
-    constructor(private readonly taskService: TaskService){}
+    constructor(private readonly taskService: TaskService) { }
 
     @Post('create')
     @UseGuards(AdminGuard)
@@ -35,5 +37,17 @@ export class TaskController {
     updateTask(@Body() dto: UpdateTaskDTO, @GetUser() user: User) {
         return this.taskService.UpdateTask(dto);
     }
-    
+
+    @Put('started')
+    @UseGuards(EmployeeGuard)
+    @UseGuards(JwtAuthGuard)
+    updateTaskState(@Body() dto: UpdateTaskStartedDTO, @GetUser() user: User) {
+        return this.taskService.UpdateTaskState(dto, user);
+    }
+
+    @Get('commit')
+    @UseGuards(JwtAuthGuard)
+    viewMyCommit(@GetUser() user: User) {
+        return this.taskService.ViewMyCommit(user);
+    }
 }
