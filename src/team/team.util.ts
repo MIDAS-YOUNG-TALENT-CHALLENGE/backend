@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TeamEntity } from 'src/team/entities/team.entity';
@@ -41,6 +41,23 @@ export class TeamUtil {
         
         if (!teamInfoList) return [];
         return teamInfoList;
+    }
+
+    async getTeamIdByUserId(userId: number) {
+        const teamInfo = (await this.memberRepository.findOne({
+            relations: {
+                user: true,
+                team: {
+                    leader: true,
+                    members: true
+                }
+            },
+            where: {
+                userId: userId
+            }
+        }));
+        if (!teamInfo) throw new NotFoundException("팀을 찾을 수 없습니다.");
+        return teamInfo.teamId;
     }
 
     async getTeamMemberList(teamId: string) : Promise<MemberEntity[]> {

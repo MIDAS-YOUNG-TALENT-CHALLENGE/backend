@@ -1,6 +1,7 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, UseGuards, Delete, Put, Get } from '@nestjs/common';
 import { AdminGuard } from 'src/auth/admin.guard';
 import { GetUser } from 'src/auth/getUser.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { User } from 'src/auth/jwt/jwt.model';
 import { CreateTaskDTO } from './dto/request/create-task.dto';
 import { TaskService } from './task.service';
@@ -11,7 +12,21 @@ export class TaskController {
 
     @Post('create')
     @UseGuards(AdminGuard)
-    taskCreate(@Body() dto: CreateTaskDTO, @GetUser() user: User) {
-        // this.taskService(dto, user);
+    @UseGuards(JwtAuthGuard)
+    createTask(@Body() dto: CreateTaskDTO, @GetUser() user: User) {
+        return this.taskService.CreateTask(dto, user);
     }
+
+    @Delete(':taskId')
+    deleteTask(@Param('taskId') taskId) {
+        return this.taskService.DeleteTask(taskId);
+    }
+
+    @Get()
+    @UseGuards(JwtAuthGuard)
+    viewTeamTask(@GetUser() user: User) {
+        return this.taskService.ViewTeamTask(user);
+    }
+
+    
 }
