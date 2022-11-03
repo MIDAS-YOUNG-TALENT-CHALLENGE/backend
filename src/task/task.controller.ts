@@ -60,6 +60,13 @@ export class TaskController {
         return this.taskService.ViewAwaitingApproval(user);
     }
 
+    @Put('examined')
+    @UseGuards(AdminGuard)
+    @UseGuards(JwtAuthGuard)
+    updateTaskExamined(@Body("taskId") taskId: string) {
+        return this.taskService.UpdateTaskExamined(taskId);
+    }
+
     @Get('commit')
     @UseGuards(JwtAuthGuard)
     viewMyCommit(@GetUser() user: User) {

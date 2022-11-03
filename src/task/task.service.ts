@@ -89,10 +89,10 @@ export class TaskService {
             .execute();
     }
 
-    // TODO :: 같은 팀일 때 조건 추가
     async ViewMyCommit(user: User) {
+        const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
         return await this.taskRepository.find({
-            where: { managerId: user.userId, completed: true, examined: true }
+            where: { managerId: user.userId, completed: true, examined: true, teamId: teamId }
         });
     }
 
@@ -109,5 +109,15 @@ export class TaskService {
             },
             where: { teamId: teamId, completed: true, examined: false }
         });
+    }
+
+    async UpdateTaskExamined(taskId: string) {
+        await this.taskRepository.createQueryBuilder()
+            .update(TaskEntity)
+            .set({
+                examined: true
+            })
+            .where("taskId = :taskId", { taskId: taskId })
+            .execute();
     }
 }
