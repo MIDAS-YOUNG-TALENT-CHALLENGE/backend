@@ -1,6 +1,9 @@
 import { IsBoolean, IsNumber, IsString } from "class-validator";
 
-export class CreateTaskDTO {
+export class UpdateTaskDTO {
+
+    @IsString()
+    taskId: string;
 
     @IsString()
     title: string;

@@ -3,10 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/jwt/jwt.model';
 import { v4 as getUUID } from 'uuid';
-import { Repository } from 'typeorm';
+import { Repository, UpdateEvent } from 'typeorm';
 import { CreateTaskDTO } from './dto/request/create-task.dto';
 import { TaskEntity } from './entities/task.entity';
 import { TeamUtil } from 'src/team/team.util';
+import { UpdateTaskDTO } from './dto/request/update-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -39,5 +40,18 @@ export class TaskService {
     async ViewTeamTask(user: User) {
         const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
         return this.taskRepository.find({where: {teamId: teamId}});
+    }
+
+    async UpdateTask(dto: UpdateTaskDTO) {
+        await this.taskRepository.createQueryBuilder()
+            .update(TaskEntity)
+            .set({ title: dto.title, 
+                location: dto.location, 
+                description: dto.description,
+                mentionId: dto.mention,
+                important: dto.important 
+            })
+            .where("taskId = :taskId", { taskId: dto.taskId })
+            .execute();
     }
 }

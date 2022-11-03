@@ -4,6 +4,7 @@ import { GetUser } from 'src/auth/getUser.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { User } from 'src/auth/jwt/jwt.model';
 import { CreateTaskDTO } from './dto/request/create-task.dto';
+import { UpdateTaskDTO } from './dto/request/update-task.dto';
 import { TaskService } from './task.service';
 
 @Controller('task')
@@ -28,5 +29,11 @@ export class TaskController {
         return this.taskService.ViewTeamTask(user);
     }
 
+    @Put()
+    @UseGuards(AdminGuard)
+    @UseGuards(JwtAuthGuard)
+    updateTask(@Body() dto: UpdateTaskDTO, @GetUser() user: User) {
+        return this.taskService.UpdateTask(dto);
+    }
     
 }
