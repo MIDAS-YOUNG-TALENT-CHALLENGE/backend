@@ -81,7 +81,6 @@ export class TeamService {
                 userId: user.userId
             }
         })).team;
-        
         if (!teamInfoList) return [];
         return teamInfoList;
     }
