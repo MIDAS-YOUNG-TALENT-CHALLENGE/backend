@@ -13,7 +13,7 @@ export class MemberEntity {
     @JoinColumn({name: 'teamId'})
     team: TeamEntity;
 
-    @Column({nullable: false, length: 32})
+    @Column({nullable: false, type:"uuid"})
     teamId: string;
 
     @ManyToOne(type => UserEntity, user => user.userId)

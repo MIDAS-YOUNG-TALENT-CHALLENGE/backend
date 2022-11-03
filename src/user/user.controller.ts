@@ -8,16 +8,16 @@ import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
 
-    constructor(private readonly userservice: UserService) { }
+    constructor(private readonly userService: UserService) { }
 
     @Post('create')
     createUser(@Body() dto: CreateUserDTO) {
-        return this.userservice.Register(dto);
+        return this.userService.Register(dto);
     }
 
     @Post('login')
     login(@Body() dto: LoginDTO) {
-        return this.userservice.login(dto);
+        return this.userService.login(dto);
     }
 
     @Get('my')
@@ -27,5 +27,5 @@ export class UserController {
     }
 
     // Todo::Team User List
-    
+
 }

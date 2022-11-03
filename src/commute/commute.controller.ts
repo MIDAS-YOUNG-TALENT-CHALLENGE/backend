@@ -12,20 +12,20 @@ import { GetAllCommuteDTO } from './dto/request/get-all-commute.dto';
 @Controller('commute')
 export class CommuteController {
 
-    constructor(private readonly commuteservice: CommuteService) { }
+    constructor(private readonly commuteService: CommuteService) { }
 
     @Post('check')
     @UseGuards(EmployeeGuard)
     @UseGuards(JwtAuthGuard)
     checkCommute(@Body() dto: CheckCommuteDTO, @GetUser() user: User) {
-        return this.commuteservice.CheckCommute(dto, user);
+        return this.commuteService.CheckCommute(dto, user);
     }
 
     @Get(':userId')
     @UseGuards(AdminGuard)
     @UseGuards(JwtAuthGuard)
     getAllCommute(@Param() dto: GetAllCommuteDTO) {
-        return this.commuteservice.GetAllCommute(dto);
+        return this.commuteService.GetAllCommute(dto);
     }
 
 }

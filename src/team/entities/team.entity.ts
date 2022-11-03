@@ -5,26 +5,25 @@ import { MemberEntity } from 'src/team/entities/member.entity';
 @Entity('team')
 export class TeamEntity {
 
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+    @PrimaryColumn({ type: "uuid" })
+    teamId: string;
 
     @ManyToOne(type => UserEntity, leader => leader.userId)
-    @JoinColumn({name: 'leaderId'})
+    @JoinColumn({ name: 'leaderId' })
     leader: UserEntity;
 
-    @Column({nullable: false, unsigned: true})
+    @Column({ nullable: false, unsigned: true })
     leaderId: number;
-    
+
     @Column({
         length: 32
     })
     name: string;
 
     @Column({
-        type: "int",
-        width: 4
+        length: 4
     })
-    teamCode: number;
+    teamCode: string;
 
     @CreateDateColumn()
     createdAt: Date;
