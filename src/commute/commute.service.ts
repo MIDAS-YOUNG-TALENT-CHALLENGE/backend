@@ -51,8 +51,7 @@ export class CommuteService {
         return commutes;
     }
 
-    async GetCommuteState(user: User) {
-        const { userId } = user;
+    async GetCommuteState(userId: number) {
 
         const commutes = await this.commuteRepository.find({
             where: {

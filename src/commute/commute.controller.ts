@@ -8,6 +8,7 @@ import { User } from 'src/auth/jwt/jwt.model';
 import { CommuteService } from './commute.service';
 import { CheckCommuteDTO } from './dto/request/check-commute.dto';
 import { GetAllCommuteDTO } from './dto/request/get-all-commute.dto';
+import { GetCommuteStateDTO } from './dto/request/get-commute-state.dto';
 
 @Controller('commute')
 export class CommuteController {
@@ -31,7 +32,14 @@ export class CommuteController {
     @Get()
     @UseGuards(JwtAuthGuard)
     getMyCommute(@GetUser() user: User) {
-        return this.commuteService.GetCommuteState(user);
+        return this.commuteService.GetCommuteState(user.userId);
+    }
+
+    @Get('state/:userId')
+    @UseGuards(AdminGuard)
+    @UseGuards(JwtAuthGuard)
+    get(@Param() dto: GetCommuteStateDTO) {
+        return this.commuteService.GetCommuteState(dto.userId);
     }
 
 }
