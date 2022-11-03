@@ -29,7 +29,6 @@ export class CommuteController {
     }
 
     @Get()
-    @UseGuards(EmployeeGuard)
     @UseGuards(JwtAuthGuard)
     getMyCommute(@GetUser() user: User) {
         return this.commuteService.GetCommuteState(user);

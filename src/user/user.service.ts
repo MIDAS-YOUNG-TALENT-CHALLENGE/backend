@@ -10,23 +10,35 @@ import { plainToClass } from '@nestjs/class-transformer';
 import { WorkingHourEntity } from './entities/working-hour.entity';
 import { UserDto } from 'src/auth/dto/responed/user.dto';
 import { UpdateUserDTO } from './dto/request/update-user.dto';
+import { TeamService } from 'src/team/team.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
         @InjectRepository(WorkingHourEntity) private workingHourRepository: Repository<WorkingHourEntity>,
-        private readonly authservice: AuthService
+        private readonly teamService: TeamService,
+        private readonly authService: AuthService
     ) { }
+
+    private async getLastUserId() {
+        return await this.userRepository.find(select {})
+    }
 
     async Register(dto: CreateUserDTO) {
         //TODO::Email Unique
-        const { password } = dto;
+        const { password, role } = dto;
         const hashedPassword = await this.HashPassword(password);
         await this.SaveUser({
             ...dto,
             password: hashedPassword
         });
+        // if (role === UserRole.EMPOLYEE) {
+        //     this.teamService.joinTeam()
+        // }
+        // if (role === UserRole.SUPERVISOR) {
+        //     this.teamService.CreateTeam()
+        // }
     }
 
     async HashPassword(password: string) {
@@ -43,6 +55,7 @@ export class UserService {
         user.email = dto.email;
         user.password = dto.password;
         await this.userRepository.save(user);
+        return user;
     }
 
     async login(dto: LoginDTO) {
@@ -51,7 +64,7 @@ export class UserService {
         if (user === null) throw new NotFoundException("이메일을 찾을 수 없습니다.");
         const hashedPassword = user.password;
         await this.verifyPassword(password, hashedPassword);
-        return this.authservice.getToken(email, hashedPassword);
+        return this.authService.getToken(email, hashedPassword);
     }
 
     private async verifyPassword(plainTextPassword: string, hashedPassword: string) {
@@ -73,7 +86,7 @@ export class UserService {
     }
 
     async ViewAllUser() {
-        const users = await this.userRepository.findBy({role: UserRole.EMPOLYEE});
+        const users = await this.userRepository.findBy({ role: UserRole.EMPOLYEE });
         const nowUsers: UserDto[] = users.map(user => plainToClass(UserDto, {
             ...user,
         }, { excludeExtraneousValues: true }));
@@ -83,10 +96,10 @@ export class UserService {
     async UpdateUser(dto: UpdateUserDTO) {
         const { userId, nickname } = dto;
         await this.userRepository.createQueryBuilder()
-        .update(UserEntity)
-        .set({ nickname: nickname })
-        .where("userId = :userId", {userId: userId})
-        .execute();
+            .update(UserEntity)
+            .set({ nickname: nickname })
+            .where("userId = :userId", { userId: userId })
+            .execute();
     }
 
 }
