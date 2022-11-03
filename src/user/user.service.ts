@@ -21,9 +21,13 @@ export class UserService {
         private readonly authService: AuthService
     ) { }
 
-    private async getLastUserId() {
-        return await this.userRepository.find(select {})
-    }
+    // private async getLastUserId() {
+    //     return await this.userRepository.find({
+    //         where: {
+                
+    //         }
+    //     })
+    // }
 
     async Register(dto: CreateUserDTO) {
         //TODO::Email Unique

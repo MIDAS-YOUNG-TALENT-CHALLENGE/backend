@@ -21,19 +21,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: SECRET_KEY,
-            passReqToCallback: true,
             ignoreExpiration: false,
         });
     }
 
     async validate(payload: any) {
-        const token = await this.jwtService.verify(payload.rawHeaders[1].split(' ')[1], {
-            secret: SECRET_KEY,
-        });
-        if (token === undefined) {
-            throw new UnauthorizedException();
-        }
-        const user = await this.findByPhone(token.email);
+        const user = await this.findByPhone(payload.email);
         return user;
     }
 
