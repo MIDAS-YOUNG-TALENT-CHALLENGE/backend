@@ -43,5 +43,11 @@ export class UserEntity {
         default: "주소 등록 안함"
     })
     address: string;
+
+    @Column({
+        type: "int",
+        default: 0  
+    })
+    totalWorkingHour: number;
     
 }

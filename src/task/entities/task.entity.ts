@@ -46,4 +46,17 @@ export class TaskEntity {
         default: false
     })
     important: Boolean;
+
+    @Column({ 
+        type: Boolean, 
+        default: false
+    })
+    started: Boolean;
+
+    @Column({ 
+        type: Boolean, 
+        default: false
+    })
+    created: Boolean;
+
 }

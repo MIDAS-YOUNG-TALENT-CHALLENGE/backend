@@ -1,7 +1,9 @@
 import { Body, Controller, Post, Get, UseGuards, Put, Param } from '@nestjs/common';
 import { AdminGuard } from 'src/auth/admin.guard';
+import { EmployeeGuard } from 'src/auth/employee.guard';
 import { GetUser } from 'src/auth/getUser.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { User } from 'src/auth/jwt/jwt.model';
 import { CreateUserDTO } from './dto/request/create-user.dto';
 import { LoginDTO } from './dto/request/login.dto';
 import { UpdateUserDTO } from './dto/request/update-user.dto';
@@ -46,6 +48,18 @@ export class UserController {
     @UseGuards(AdminGuard)
     @UseGuards(JwtAuthGuard)
     updateUser(@Body() dto: UpdateUserDTO) {
+        return this.userService.UpdateUser(dto);
+    }
+
+    @Put('my')
+    @UseGuards(EmployeeGuard)
+    @UseGuards(JwtAuthGuard)
+    updateMyInfo(@GetUser() user: User, @Body("nickname") nickname: string) {
+        console.log(nickname);
+        const dto: UpdateUserDTO = {
+            userId: user.userId,
+            nickname: nickname
+        }
         return this.userService.UpdateUser(dto);
     }
 
