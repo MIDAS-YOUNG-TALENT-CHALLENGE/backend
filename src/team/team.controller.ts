@@ -1,5 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AdminGuard } from 'src/auth/admin.guard';
+import { EmployeeGuard } from 'src/auth/employee.guard';
 import { GetUser } from 'src/auth/getUser.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { User } from 'src/auth/jwt/jwt.model';
@@ -18,6 +19,15 @@ export class TeamController {
         @Body() dto: CreateTeamDTO
     ) {
         return this.teamService.CreateTeam(user, dto);
+    }
+
+    @Post('join')
+    @UseGuards(EmployeeGuard)
+    joinTeam(
+        @GetUser() user: User,
+        @Body('teamCode') teamCode: string
+    ) {
+        return this.teamService.joinTeam(user, teamCode);
     }
 
 }

@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, NotFoundException, NotAcceptableException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, NotFoundException, NotAcceptableException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity, UserRole } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -11,6 +11,7 @@ export class EmployeeGuard implements CanActivate {
     ): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         const { userId } = request.user;
+        if (userId === undefined) throw new UnauthorizedException();
         return this.checkUserRole(userId);
     }
     private async checkUserRole(userId: number): Promise<boolean> {

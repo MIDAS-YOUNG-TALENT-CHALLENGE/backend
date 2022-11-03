@@ -8,10 +8,11 @@ import { AuthModule } from 'src/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
+import { WorkingHourEntity } from './entities/working-hour.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature([UserEntity, WorkingHourEntity]),
         ClassTransformer,
         AuthModule,
         PassportModule.register({ defaultStrategy: 'jwt', session: false }),
@@ -19,7 +20,7 @@ import { AuthService } from 'src/auth/auth.service';
             secret: process.env.SECRET_KEY,
             signOptions: { expiresIn: '1y' },
         })
-    ], 
+    ],
     controllers: [UserController],
     providers: [UserService, AuthService]
 })

@@ -6,15 +6,19 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDTO } from './dto/request/create-user.dto';
 import { LoginDTO } from './dto/request/login.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { plainToClass } from '@nestjs/class-transformer';
+import { WorkingHourEntity } from './entities/working-hour.entity';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
+        @InjectRepository(WorkingHourEntity) private workingHourRepository: Repository<WorkingHourEntity>,
         private readonly authservice: AuthService
     ) { }
 
     async Register(dto: CreateUserDTO) {
+        //TODO::Email Unique
         const { password } = dto;
         const hashedPassword = await this.HashPassword(password);
         await this.SaveUser({
@@ -56,6 +60,13 @@ export class UserService {
         if (!isPasswordMatching) {
             throw new NotAcceptableException("패스워드가 맞지 않습니다.");
         }
+    }
+
+    async SetWorkingHour(workingHour: number) {
+        const newWorkingHour: WorkingHourEntity = plainToClass(WorkingHourEntity, {
+            workingHour: workingHour
+        });
+        await this.workingHourRepository.save(newWorkingHour);
     }
 
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToClass } from '@nestjs/class-transformer';
 import { User } from 'src/auth/jwt/jwt.model';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CreateTeamDTO } from './dto/request/create-team.dto';
 import { MemberEntity } from './entities/member.entity';
 import { TeamEntity } from './entities/team.entity';
+import { TeamUtil } from './team.util';
 
 @Injectable()
 export class TeamService {
@@ -14,6 +15,7 @@ export class TeamService {
     constructor(
         @InjectRepository(TeamEntity) private teamRepository: Repository<TeamEntity>,
         @InjectRepository(MemberEntity) private memberRepository: Repository<MemberEntity>,
+        private readonly teamUtil: TeamUtil
     ) {}
 
     async CreateTeam(user: User, dto: CreateTeamDTO) {
@@ -43,4 +45,28 @@ export class TeamService {
             teamId: newTeamId
         }
     }
+
+    async joinTeam(user: User, teamCode: string) {
+        const teamCodeInfo = await this.teamRepository.findOne({
+            where: {
+                teamCode: teamCode
+            }
+        });
+        if (teamCodeInfo === null) throw new NotFoundException("팀 코드에 맞는 팀을 찾을 수 없습니다.");
+
+        const { team: teamInfo, member: memberInfo } = await this.teamUtil.getTeamAndMember(teamCodeInfo.teamId, user.userId);
+        if (teamInfo === null) throw new NotFoundException('팀을 찾을 수 없습니다.');
+        if (memberInfo !== null) throw new ConflictException('이미 들어간 팀입니다.');
+
+        const newMember: MemberEntity = plainToClass(MemberEntity, {
+            team: teamInfo,
+            user
+        });
+
+        await this.memberRepository.save(newMember);
+        return {
+            teamId: teamInfo.teamId
+        };
+    }
+
 }

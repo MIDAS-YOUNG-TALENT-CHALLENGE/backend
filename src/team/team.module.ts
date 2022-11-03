@@ -6,6 +6,7 @@ import { MemberEntity } from './entities/member.entity';
 import { TeamEntity } from './entities/team.entity';
 import { TeamController } from './team.controller';
 import { TeamService } from './team.service';
+import { TeamUtil } from './team.util';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TeamService } from './team.service';
       ClassTransformer
   ],
   controllers: [TeamController],
-  providers: [TeamService]
+  providers: [TeamService, TeamUtil],
+  exports: [TeamUtil]
 })
 export class TeamModule {}
