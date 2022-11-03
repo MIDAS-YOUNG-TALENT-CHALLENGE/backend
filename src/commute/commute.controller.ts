@@ -21,6 +21,13 @@ export class CommuteController {
         return this.commuteService.CheckCommute(dto, user);
     }
 
+    @Get()
+    @UseGuards(EmployeeGuard)
+    @UseGuards(JwtAuthGuard)
+    getCommuteState(@GetUser() user: User) {
+        return this.commuteService.GetCommuteState(user);
+    }
+
     @Get(':userId')
     @UseGuards(AdminGuard)
     @UseGuards(JwtAuthGuard)

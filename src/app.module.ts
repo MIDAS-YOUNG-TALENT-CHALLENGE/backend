@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CommuteModule } from './commute/commute.module';
 import { TeamModule } from './team/team.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TeamModule } from './team/team.module';
     }),
     CommuteModule,
     TeamModule,
+    TaskModule,
   ],
   controllers: [],
   providers: [],

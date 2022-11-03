@@ -25,7 +25,7 @@ export class TeamUtil {
         return teamInfo;
     }
     
-    async getTeamListByUsercode(userId: number) : Promise<TeamEntity[]> {
+    async getTeamListByUserId(userId: number) : Promise<TeamEntity[]> {
         const teamInfoList: TeamEntity[] = (await this.memberRepository.find({
             relations: {
                 user: true,

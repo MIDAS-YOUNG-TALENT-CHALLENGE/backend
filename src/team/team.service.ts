@@ -67,6 +67,11 @@ export class TeamService {
         return {
             teamId: teamInfo.teamId
         };
+
+    }
+
+    async GetTeamMember(user: User) {
+        return await this.teamUtil.getTeamListByUserId(user.userId);
     }
 
 }

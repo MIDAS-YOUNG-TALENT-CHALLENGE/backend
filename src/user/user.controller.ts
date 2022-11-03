@@ -48,7 +48,5 @@ export class UserController {
     updateUser(@Body() dto: UpdateUserDTO) {
         return this.userService.UpdateUser(dto);
     }
-    
-    // Todo::Team User List
 
 }

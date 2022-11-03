@@ -12,7 +12,7 @@ import { GetAllCommuteDTO } from './dto/request/get-all-commute.dto';
 export class CommuteService {
     constructor(
         @InjectRepository(CommuteEntity) private commuteRepository: Repository<CommuteEntity>,
-    ) {}
+    ) { }
 
     // TODO :: attendence 후 leave 유효성 검사
     async CheckCommute(dto: CheckCommuteDTO, user: User): Promise<void> {
@@ -47,6 +47,19 @@ export class CommuteService {
         });
         if (commutes.length == 0) throw new NotFoundException('출퇴근 정보를 찾을 수 없습니다');
         return commutes;
+    }
+
+    async GetCommuteState(user: User) {
+        const commute = await this.commuteRepository.findOne({
+            where: {
+                userId: user.userId
+            },
+            order: {
+                date: "DESC"
+            }
+        });
+        if (commute === null) throw new NotFoundException('출퇴근 정보를 찾을 수 없습니다.');
+        return commute;
     }
 }
 
