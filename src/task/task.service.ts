@@ -39,7 +39,17 @@ export class TaskService {
 
     async ViewTeamTask(user: User) {
         const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
-        return this.taskRepository.find({where: {teamId: teamId}});
+        return this.taskRepository.find({
+            relations: {
+                mention: true
+            },
+            select: {
+                mention: {
+                    nickname: true
+                }
+            },
+            where: {teamId: teamId}
+        });
     }
 
     async UpdateTask(dto: UpdateTaskDTO) {
