@@ -42,10 +42,10 @@ export class UserService {
         });
         const userId = await this.getLastUserId();
         if (role === UserRole.EMPOLYEE) {
-            this.teamService.joinTeam(userId, teamCode);
+            return this.teamService.joinTeam(userId, teamCode);
         }
         if (role === UserRole.SUPERVISOR) {
-            this.teamService.CreateTeam(userId, {
+            return this.teamService.CreateTeam(userId, {
                 teamName: teamName,
                 teamCode: teamCode
             });
