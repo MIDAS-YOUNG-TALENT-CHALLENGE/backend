@@ -25,7 +25,7 @@ export class CommuteController {
     @UseGuards(AdminGuard)
     @UseGuards(JwtAuthGuard)
     getAllCommute(@Param() dto: GetAllCommuteDTO) {
-        return this.commuteservice.getCommute(dto);
+        return this.commuteservice.GetAllCommute(dto);
     }
 
 }

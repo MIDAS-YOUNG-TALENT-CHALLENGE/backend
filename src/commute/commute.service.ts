@@ -35,7 +35,7 @@ export class CommuteService {
         await this.commuteRepository.save(commute);
     }
 
-    async getCommute(dto: GetAllCommuteDTO) {
+    async GetAllCommute(dto: GetAllCommuteDTO) {
         const { userId } = dto;
         const commutes = await this.commuteRepository.find({
             where: {
