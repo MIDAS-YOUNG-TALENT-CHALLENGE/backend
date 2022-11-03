@@ -5,6 +5,7 @@ import { GetUser } from 'src/auth/getUser.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { User } from 'src/auth/jwt/jwt.model';
 import { CreateTaskDTO } from './dto/request/create-task.dto';
+import { UpdateTaskCompeletedDTO } from './dto/request/update-task-completed.dto';
 import { UpdateTaskStartedDTO } from './dto/request/update-task-started.dto';
 import { UpdateTaskDTO } from './dto/request/update-task.dto';
 import { TaskService } from './task.service';
@@ -41,8 +42,22 @@ export class TaskController {
     @Put('started')
     @UseGuards(EmployeeGuard)
     @UseGuards(JwtAuthGuard)
-    updateTaskState(@Body() dto: UpdateTaskStartedDTO, @GetUser() user: User) {
-        return this.taskService.UpdateTaskState(dto, user);
+    updateTaskStarted(@Body() dto: UpdateTaskStartedDTO, @GetUser() user: User) {
+        return this.taskService.UpdateTaskStarted(dto, user);
+    }
+
+    @Put('completed')
+    @UseGuards(EmployeeGuard)
+    @UseGuards(JwtAuthGuard)
+    updateTaskCompeleted(@Body() dto: UpdateTaskCompeletedDTO, @GetUser() user: User) {
+        return this.taskService.UpdateTaskCompeleted(dto);
+    }
+
+    @Get('approval')
+    @UseGuards(AdminGuard)
+    @UseGuards(JwtAuthGuard)
+    viewAwaitingApproval(@GetUser() user: User) {
+        return this.taskService.ViewAwaitingApproval(user);
     }
 
     @Get('commit')

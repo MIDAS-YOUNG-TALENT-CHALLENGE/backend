@@ -4,8 +4,8 @@ export class UpdateTaskCompeletedDTO {
 
     @IsString()
     taskId: string;
-    
-    @IsIn(['true', 'false'])
+
+    @IsIn(['true'])
     completed: string;
-    
+
 }

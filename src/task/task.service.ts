@@ -9,6 +9,7 @@ import { TaskEntity } from './entities/task.entity';
 import { TeamUtil } from 'src/team/team.util';
 import { UpdateTaskDTO } from './dto/request/update-task.dto';
 import { UpdateTaskStartedDTO } from './dto/request/update-task-started.dto';
+import { UpdateTaskCompeletedDTO } from './dto/request/update-task-completed.dto';
 
 @Injectable()
 export class TaskService {
@@ -67,7 +68,7 @@ export class TaskService {
             .execute();
     }
 
-    async UpdateTaskState(dto: UpdateTaskStartedDTO, user: User) {
+    async UpdateTaskStarted(dto: UpdateTaskStartedDTO, user: User) {
         await this.taskRepository.createQueryBuilder()
             .update(TaskEntity)
             .set({
@@ -78,11 +79,35 @@ export class TaskService {
             .execute();
     }
 
-    
+    async UpdateTaskCompeleted(dto: UpdateTaskCompeletedDTO) {
+        await this.taskRepository.createQueryBuilder()
+            .update(TaskEntity)
+            .set({
+                completed: dto.completed === "true" ? true : false,
+            })
+            .where("taskId = :taskId", { taskId: dto.taskId })
+            .execute();
+    }
 
+    // TODO :: 같은 팀일 때 조건 추가
     async ViewMyCommit(user: User) {
         return await this.taskRepository.find({
             where: { managerId: user.userId, completed: true, examined: true }
+        });
+    }
+
+    async ViewAwaitingApproval(user: User) {
+        const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
+        return this.taskRepository.find({
+            relations: {
+                manager: true
+            },
+            select: {
+                manager: {
+                    nickname: true
+                }
+            },
+            where: { teamId: teamId, completed: true, examined: false }
         });
     }
 }

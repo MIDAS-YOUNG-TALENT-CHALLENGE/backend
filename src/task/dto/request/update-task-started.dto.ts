@@ -5,7 +5,7 @@ export class UpdateTaskStartedDTO {
     @IsString()
     taskId: string;
 
-    @IsIn(['true', 'false'])
+    @IsIn(['true'])
     started: string;
-    
+
 }
