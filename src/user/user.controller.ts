@@ -4,6 +4,7 @@ import { GetUser } from 'src/auth/getUser.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { CreateUserDTO } from './dto/request/create-user.dto';
 import { LoginDTO } from './dto/request/login.dto';
+import { UpdateUserDTO } from './dto/request/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -34,6 +35,19 @@ export class UserController {
         return this.userService.SetWorkingHour(workingHour);
     }
 
+    @Get('all')
+    @UseGuards(AdminGuard)
+    @UseGuards(JwtAuthGuard)
+    viewAllUser() {
+        return this.userService.ViewAllUser();
+    }
+
+    @Put()
+    @UseGuards(AdminGuard)
+    @UseGuards(JwtAuthGuard)
+    updateUser(@Body() dto: UpdateUserDTO) {
+        return this.userService.UpdateUser(dto);
+    }
     
     // Todo::Team User List
 

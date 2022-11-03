@@ -1,13 +1,15 @@
 import { Injectable, NotFoundException, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UserEntity, UserRole } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDTO } from './dto/request/create-user.dto';
 import { LoginDTO } from './dto/request/login.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { plainToClass } from '@nestjs/class-transformer';
 import { WorkingHourEntity } from './entities/working-hour.entity';
+import { UserDto } from 'src/auth/dto/responed/user.dto';
+import { UpdateUserDTO } from './dto/request/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -67,6 +69,23 @@ export class UserService {
             workingHour: workingHour
         });
         await this.workingHourRepository.save(newWorkingHour);
+    }
+
+    async ViewAllUser() {
+        const users = await this.userRepository.findBy({role: UserRole.EMPOLYEE});
+        const nowUsers: UserDto[] = users.map(user => plainToClass(UserDto, {
+            ...user,
+        }, { excludeExtraneousValues: true }));
+        return nowUsers;
+    }
+
+    async UpdateUser(dto: UpdateUserDTO) {
+        const { userId, nickname } = dto;
+        await this.userRepository.createQueryBuilder()
+        .update(UserEntity)
+        .set({ nickname: nickname })
+        .where("userId = :userId", {userId: userId})
+        .execute();
     }
 
 }
