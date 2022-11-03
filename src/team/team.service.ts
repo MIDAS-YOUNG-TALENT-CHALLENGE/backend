@@ -71,7 +71,19 @@ export class TeamService {
     }
 
     async GetTeamMember(user: User) {
-        return await this.teamUtil.getTeamListByUserId(user.userId);
+        const teamInfoList: TeamEntity = (await this.memberRepository.findOne({
+            relations: {
+                team: {
+                    members: true
+                }
+            },
+            where: {
+                userId: user.userId
+            }
+        })).team;
+        
+        if (!teamInfoList) return [];
+        return teamInfoList;
     }
 
 }
