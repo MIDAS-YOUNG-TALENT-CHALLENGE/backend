@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsIn, IsString, Matches, MaxLength, MinLength, IsEmail } from 'class-validator'
+import { IsIn, IsString, Matches, MaxLength, MinLength, IsEmail, IsNumber, IsOptional } from 'class-validator'
 import { UserRole } from 'src/user/entities/user.entity';
 
 export class CreateUserDTO {
@@ -19,5 +19,13 @@ export class CreateUserDTO {
 
     @IsIn(["supervisor", "employee"])
     role: UserRole
+
+    @IsOptional()
+    @IsString()
+    teamCode?: string;
+
+    @IsOptional()
+    @IsString()
+    teamName?: string;
 
 }

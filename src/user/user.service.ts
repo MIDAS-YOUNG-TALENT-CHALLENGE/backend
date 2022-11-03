@@ -21,28 +21,35 @@ export class UserService {
         private readonly authService: AuthService
     ) { }
 
-    // private async getLastUserId() {
-    //     return await this.userRepository.find({
-    //         where: {
-                
-    //         }
-    //     })
-    // }
+    private async getLastUserId() {
+        const users = await this.userRepository.find({
+            order: {
+                userId: "DESC"
+            }
+        })
+        return users[0].userId;
+    }
 
     async Register(dto: CreateUserDTO) {
         //TODO::Email Unique
-        const { password, role } = dto;
+        const { password, role, teamCode, teamName } = dto;
         const hashedPassword = await this.HashPassword(password);
+        if (role === UserRole.EMPOLYEE && !teamCode) throw new NotAcceptableException("팀 코드는 필수입니다.");
+        if (role === UserRole.SUPERVISOR && (!teamCode || !teamName)) throw new NotAcceptableException("팀 코드와 이름은 필수입니다.");
         await this.SaveUser({
             ...dto,
             password: hashedPassword
         });
-        // if (role === UserRole.EMPOLYEE) {
-        //     this.teamService.joinTeam()
-        // }
-        // if (role === UserRole.SUPERVISOR) {
-        //     this.teamService.CreateTeam()
-        // }
+        const userId = await this.getLastUserId();
+        if (role === UserRole.EMPOLYEE) {
+            this.teamService.joinTeam(userId, teamCode);
+        }
+        if (role === UserRole.SUPERVISOR) {
+            this.teamService.CreateTeam(userId, {
+                teamName: teamName,
+                teamCode: teamCode
+            });
+        }
     }
 
     async HashPassword(password: string) {

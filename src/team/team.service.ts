@@ -18,7 +18,7 @@ export class TeamService {
         private readonly teamUtil: TeamUtil
     ) {}
 
-    async CreateTeam(user: User, dto: CreateTeamDTO) {
+    async CreateTeam(userId: number, dto: CreateTeamDTO) {
         const teamInfo = await this.teamRepository.findOne({
             where: {
                 name: dto.teamName
@@ -31,12 +31,12 @@ export class TeamService {
             teamId: newTeamId,
             teamCode: dto.teamCode,
             name: dto.teamName,
-            leaderId: user.userId,
+            leaderId: userId,
         });
 
         const newLeader: MemberEntity = plainToClass(MemberEntity, {
             team: newTeam,
-            userId: user.userId
+            userId: userId
         });
 
         await this.teamRepository.save(newTeam);
@@ -46,7 +46,7 @@ export class TeamService {
         }
     }
 
-    async joinTeam(user: User, teamCode: string) {
+    async joinTeam(userId: number, teamCode: string) {
         const teamCodeInfo = await this.teamRepository.findOne({
             where: {
                 teamCode: teamCode
@@ -54,13 +54,13 @@ export class TeamService {
         });
         if (teamCodeInfo === null) throw new NotFoundException("팀 코드에 맞는 팀을 찾을 수 없습니다.");
 
-        const { team: teamInfo, member: memberInfo } = await this.teamUtil.getTeamAndMember(teamCodeInfo.teamId, user.userId);
+        const { team: teamInfo, member: memberInfo } = await this.teamUtil.getTeamAndMember(teamCodeInfo.teamId, userId);
         if (teamInfo === null) throw new NotFoundException('팀을 찾을 수 없습니다.');
         if (memberInfo !== null) throw new ConflictException('이미 들어간 팀입니다.');
 
         const newMember: MemberEntity = plainToClass(MemberEntity, {
             team: teamInfo,
-            user
+            userId: userId
         });
 
         await this.memberRepository.save(newMember);

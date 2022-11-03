@@ -18,7 +18,7 @@ export class TeamController {
         @GetUser() user: User,
         @Body() dto: CreateTeamDTO
     ) {
-        return this.teamService.CreateTeam(user, dto);
+        return this.teamService.CreateTeam(user.userId, dto);
     }
 
     @Post('join')
@@ -27,7 +27,7 @@ export class TeamController {
         @GetUser() user: User,
         @Body('teamCode') teamCode: string
     ) {
-        return this.teamService.joinTeam(user, teamCode);
+        return this.teamService.joinTeam(user.userId, teamCode);
     }
     
     @Get('member')
