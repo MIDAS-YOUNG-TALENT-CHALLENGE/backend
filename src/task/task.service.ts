@@ -13,111 +13,123 @@ import { UpdateTaskCompeletedDTO } from './dto/request/update-task-completed.dto
 
 @Injectable()
 export class TaskService {
-    constructor(
-        @InjectRepository(TaskEntity) private taskRepository: Repository<TaskEntity>,
-        private readonly teamUtil: TeamUtil
-    ) { }
+  constructor(
+    @InjectRepository(TaskEntity)
+    private taskRepository: Repository<TaskEntity>,
+    private readonly teamUtil: TeamUtil,
+  ) {}
 
-    async CreateTask(dto: CreateTaskDTO, user: User) {
-        const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
-        const newTask: TaskEntity = plainToClass(TaskEntity, {
-            teamId: teamId,
-            taskId: getUUID(),
-            title: dto.title,
-            location: dto.location,
-            description: dto.description,
-            mentionId: dto.mention,
-            important: dto.important
-        })
-        await this.taskRepository.save(newTask);
-    }
+  async CreateTask(dto: CreateTaskDTO, user: User) {
+    const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
+    const newTask: TaskEntity = plainToClass(TaskEntity, {
+      teamId: teamId,
+      taskId: getUUID(),
+      title: dto.title,
+      location: dto.location,
+      description: dto.description,
+      mentionId: dto.mention,
+      important: dto.important,
+    });
+    await this.taskRepository.save(newTask);
+  }
 
-    async DeleteTask(taskId: string) {
-        await this.taskRepository.createQueryBuilder()
-            .delete()
-            .where("taskId = :taskId", { taskId: taskId })
-            .execute()
-    }
+  async DeleteTask(taskId: string) {
+    await this.taskRepository
+      .createQueryBuilder()
+      .delete()
+      .where('taskId = :taskId', { taskId: taskId })
+      .execute();
+  }
 
-    async ViewTeamTask(user: User) {
-        const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
-        return this.taskRepository.find({
-            relations: {
-                mention: true
-            },
-            select: {
-                mention: {
-                    nickname: true
-                }
-            },
-            where: { teamId: teamId }
-        });
-    }
+  async ViewTeamTask(user: User) {
+    const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
+    return this.taskRepository.find({
+      relations: {
+        mention: true,
+      },
+      select: {
+        mention: {
+          nickname: true,
+          userId: true,
+        },
+      },
+      where: { teamId: teamId },
+    });
+  }
 
-    async UpdateTask(dto: UpdateTaskDTO) {
-        await this.taskRepository.createQueryBuilder()
-            .update(TaskEntity)
-            .set({
-                title: dto.title,
-                location: dto.location,
-                description: dto.description,
-                mentionId: dto.mention,
-                important: dto.important
-            })
-            .where("taskId = :taskId", { taskId: dto.taskId })
-            .execute();
-    }
+  async UpdateTask(dto: UpdateTaskDTO) {
+    await this.taskRepository
+      .createQueryBuilder()
+      .update(TaskEntity)
+      .set({
+        title: dto.title,
+        location: dto.location,
+        description: dto.description,
+        mentionId: dto.mention,
+        important: dto.important,
+      })
+      .where('taskId = :taskId', { taskId: dto.taskId })
+      .execute();
+  }
 
-    async UpdateTaskStarted(dto: UpdateTaskStartedDTO, user: User) {
-        await this.taskRepository.createQueryBuilder()
-            .update(TaskEntity)
-            .set({
-                started: dto.started === "true" ? true : false,
-                managerId: user.userId
-            })
-            .where("taskId = :taskId", { taskId: dto.taskId })
-            .execute();
-    }
+  async UpdateTaskStarted(dto: UpdateTaskStartedDTO, user: User) {
+    await this.taskRepository
+      .createQueryBuilder()
+      .update(TaskEntity)
+      .set({
+        started: dto.started === 'true' ? true : false,
+        managerId: user.userId,
+      })
+      .where('taskId = :taskId', { taskId: dto.taskId })
+      .execute();
+  }
 
-    async UpdateTaskCompeleted(dto: UpdateTaskCompeletedDTO) {
-        await this.taskRepository.createQueryBuilder()
-            .update(TaskEntity)
-            .set({
-                completed: dto.completed === "true" ? true : false,
-            })
-            .where("taskId = :taskId", { taskId: dto.taskId })
-            .execute();
-    }
+  async UpdateTaskCompeleted(dto: UpdateTaskCompeletedDTO) {
+    await this.taskRepository
+      .createQueryBuilder()
+      .update(TaskEntity)
+      .set({
+        completed: dto.completed === 'true' ? true : false,
+      })
+      .where('taskId = :taskId', { taskId: dto.taskId })
+      .execute();
+  }
 
-    async ViewMyCommit(user: User) {
-        const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
-        return await this.taskRepository.find({
-            where: { managerId: user.userId, completed: true, examined: true, teamId: teamId }
-        });
-    }
+  async ViewMyCommit(user: User) {
+    const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
+    return await this.taskRepository.find({
+      where: {
+        managerId: user.userId,
+        completed: true,
+        examined: true,
+        teamId: teamId,
+      },
+    });
+  }
 
-    async ViewAwaitingApproval(user: User) {
-        const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
-        return this.taskRepository.find({
-            relations: {
-                manager: true
-            },
-            select: {
-                manager: {
-                    nickname: true
-                }
-            },
-            where: { teamId: teamId, completed: true, examined: false }
-        });
-    }
+  async ViewAwaitingApproval(user: User) {
+    const teamId = await this.teamUtil.getTeamIdByUserId(user.userId);
+    return this.taskRepository.find({
+      relations: {
+        manager: true,
+      },
+      select: {
+        manager: {
+          nickname: true,
+        },
+      },
+      where: { teamId: teamId, completed: true, examined: false },
+    });
+  }
 
-    async UpdateTaskExamined(taskId: string) {
-        await this.taskRepository.createQueryBuilder()
-            .update(TaskEntity)
-            .set({
-                examined: true
-            })
-            .where("taskId = :taskId", { taskId: taskId })
-            .execute();
-    }
+  async UpdateTaskExamined(taskId: string) {
+    await this.taskRepository
+      .createQueryBuilder()
+      .update(TaskEntity)
+      .set({
+        examined: true,
+      })
+      .where('taskId = :taskId', { taskId: taskId })
+      .execute();
+  }
 }
