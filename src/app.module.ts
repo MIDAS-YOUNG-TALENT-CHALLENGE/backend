@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CommuteModule } from './commute/commute.module';
+import { TeamModule } from './team/team.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CommuteModule } from './commute/commute.module';
       entities: [__dirname + '/**/entities/*.entity.{js,ts}']
     }),
     CommuteModule,
+    TeamModule,
   ],
   controllers: [],
   providers: [],
