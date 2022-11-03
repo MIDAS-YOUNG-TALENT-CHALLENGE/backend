@@ -57,6 +57,6 @@ export class TaskEntity {
         type: Boolean, 
         default: false
     })
-    created: Boolean;
+    completed: Boolean;
 
 }

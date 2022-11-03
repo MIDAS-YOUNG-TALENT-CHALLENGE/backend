@@ -14,6 +14,7 @@ export class CommuteService {
     constructor(
         @InjectRepository(CommuteEntity) private commuteRepository: Repository<CommuteEntity>,
         @InjectRepository(WorkingHourEntity) private workingHourRepository: Repository<WorkingHourEntity>,
+        @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
     ) { }
 
     // TODO :: attendence 후 leave 유효성 검사
@@ -118,6 +119,10 @@ export class CommuteService {
             }
         }
     }
+
+    // private async UpdateTotalHour() {
+    //     this
+    // }
 
 }
 
