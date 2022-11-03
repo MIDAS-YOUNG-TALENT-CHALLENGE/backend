@@ -35,7 +35,7 @@ export class TaskEntity {
     @JoinColumn({ name: 'mentionId' })
     mention: UserEntity;
 
-    @Column({ nullable: false, unsigned: true })
+    @Column({ nullable: true, unsigned: true })
     mentionId: number;
 
     @CreateDateColumn()

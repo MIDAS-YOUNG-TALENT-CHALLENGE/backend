@@ -30,12 +30,15 @@ export class CommuteService {
         // 오늘이 몇주차인지
         const week = getWeek(0);
 
+        
         const commute = new CommuteEntity();
         commute.userId = userId;
         commute.state = state;
         commute.date = date;
         commute.week = week;
         await this.commuteRepository.save(commute);
+
+        if (state === CommuteState.LEAVE) await this.UpdateTotalHour(userId);
     }
 
     async GetAllCommute(dto: GetAllCommuteDTO) {
@@ -92,7 +95,6 @@ export class CommuteService {
             // 퇴근시간 - 출근시간
             const workingHour = commutes[0].date.getTime() - commutes[1].date.getTime();
             const todayState = workingHour / (1000 * 60 * 60) - workingWeeklyHour[0].workingHour / 5;
-            console.log(workingWeeklyTotalHour / (10000));
             const weeklyState = workingWeeklyHour[0].workingHour - workingWeeklyTotalHour / (10000);
             return {
                 state: CommuteState.LEAVE,
@@ -120,9 +122,23 @@ export class CommuteService {
         }
     }
 
-    // private async UpdateTotalHour() {
-    //     this
-    // }
+    private async UpdateTotalHour(userId: number) {
+        const commutes = await this.commuteRepository.find({
+            where: {
+                userId: userId
+            },
+            order: {
+                date: "DESC"
+            }
+        });
+        const workingTime = commutes[0].date.getTime() - commutes[1].date.getTime();
+        const workingHour = Math.floor(workingTime / (1000 * 60 * 60))
+        await this.userRepository.createQueryBuilder()
+            .update(UserEntity)
+            .set({ totalWorkingHour: () => `totalWorkingHour + ${workingHour}` })
+            .where("userId = :userId", { userId: userId })
+            .execute()
+    }
 
 }
 

@@ -15,4 +15,7 @@ export class UserDto {
     @Expose()
     email: string;
 
+    @Expose()
+    totalWorkingHour: number;
+
 }

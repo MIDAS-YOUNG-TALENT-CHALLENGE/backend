@@ -42,4 +42,6 @@ export class CommuteController {
         return this.commuteService.GetCommuteState(dto.userId);
     }
 
+    
+
 }

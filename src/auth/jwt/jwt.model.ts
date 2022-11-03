@@ -5,4 +5,5 @@ export type User = {
     role: UserRole,
     nickname: string,
     email: string,
+    totalWorkingHour: number
 }
