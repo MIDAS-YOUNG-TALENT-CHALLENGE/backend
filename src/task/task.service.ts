@@ -60,6 +60,7 @@ export class TaskService {
         },
       },
       where: { teamId: teamId },
+      order: { completed: 'asc' },
     });
   }
 
@@ -90,13 +91,14 @@ export class TaskService {
       .execute();
   }
 
-  async UpdateTaskCompeleted(dto: UpdateTaskCompeletedDTO) {
+  async UpdateTaskCompeleted(dto: UpdateTaskCompeletedDTO, user: User) {
     await this.taskRepository
       .createQueryBuilder()
       .update(TaskEntity)
       .set({
         completed: dto.completed === 'true' ? true : false,
         started: false,
+        managerId: user.userId,
       })
       .where('taskId = :taskId', { taskId: dto.taskId })
       .execute();
@@ -108,7 +110,6 @@ export class TaskService {
       where: {
         managerId: user.userId,
         completed: true,
-        examined: true,
         teamId: teamId,
       },
     });
