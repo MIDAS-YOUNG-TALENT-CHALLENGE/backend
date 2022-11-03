@@ -48,6 +48,12 @@ export class TaskService {
         mention: true,
       },
       select: {
+        taskId: true,
+        completed: true,
+        title: true,
+        started: true,
+        description: true,
+        location: true,
         mention: {
           nickname: true,
           userId: true,
@@ -90,6 +96,7 @@ export class TaskService {
       .update(TaskEntity)
       .set({
         completed: dto.completed === 'true' ? true : false,
+        started: false,
       })
       .where('taskId = :taskId', { taskId: dto.taskId })
       .execute();

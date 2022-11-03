@@ -1,20 +1,19 @@
-import { IsBoolean, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskDTO {
+  @IsString()
+  title: string;
 
-    @IsString()
-    title: string;
+  @IsString()
+  location: string;
 
-    @IsString()
-    location: string;
+  @IsString()
+  description: string;
 
-    @IsString()
-    description: string;
+  @IsOptional()
+  @IsNumber()
+  mention: number;
 
-    @IsNumber()
-    mention: number;
-
-    @IsBoolean()
-    important: Boolean;
-    
+  @IsBoolean()
+  important: boolean;
 }
